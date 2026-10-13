@@ -1,0 +1,83 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Portfolio Grid · theme: Cobalt · enrichment: none (portrait photo supplied) · nav: N13 · footer: Ft2
+ * tone: technical · anchor hue: 256 (electric cobalt on cool paper)
+ * pre-emit critique: P4 H4 E4 S4 R5 V4
+ */
+
+/* Tailwind v4 theme block: every token is emitted as a :root custom property
+   and doubles as a utility (bg-paper, text-muted, font-display, ...). */
+@theme {
+  /* Only the tokens below exist: the default Tailwind palette is switched off. */
+  --color-*: initial;
+
+  /* Paper and ink: cool, never pure white or black */
+  --color-paper: oklch(98.5% 0.004 250);
+  --color-paper-2: oklch(96.4% 0.006 250);
+  --color-rule: oklch(90% 0.008 252);
+  --color-rule-2: oklch(80% 0.012 254);
+  --color-muted: oklch(48% 0.016 256);
+  --color-ink-2: oklch(34% 0.018 257);
+  --color-ink: oklch(24% 0.02 258);
+
+  /* The one signal */
+  --color-accent: oklch(58% 0.2 256);
+  --color-accent-strong: oklch(49% 0.2 257);
+  --color-accent-ink: oklch(98.5% 0.004 250);
+  --color-focus: oklch(58% 0.2 256);
+
+  /* The single dark band */
+  --color-graphite: oklch(21% 0.016 260);
+  --color-graphite-2: oklch(26% 0.016 260);
+  --color-graphite-rule: oklch(36% 0.016 260);
+  --color-graphite-ink: oklch(95% 0.006 250);
+  --color-graphite-muted: oklch(74% 0.012 252);
+  --color-graphite-accent: oklch(74% 0.14 256);
+
+  /* Overlay modifiers */
+  --color-scrim: oklch(24% 0.02 258 / 0.42);
+  --color-paper-veil: oklch(98.5% 0.004 250 / 0.86);
+
+  /* Type: grotesk display, humanist body, mono labels */
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --text-*: initial;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5625rem;
+  --text-display: clamp(1.9rem, 2.4vw + 1.1rem, 3.05rem);
+
+  --radius-*: initial;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+
+  --shadow-*: initial;
+  --shadow-whisper: 0 1px 2px oklch(24% 0.02 258 / 0.06);
+  --shadow-panel: 0 16px 40px -20px oklch(24% 0.02 258 / 0.35);
+
+  --ease-*: initial;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+
+  /* 4pt spacing scale, named by role */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  --z-base: 1;
+  --z-sticky: 200;
+  --z-modal: 400;
+}

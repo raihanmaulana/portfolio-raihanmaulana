@@ -1,0 +1,273 @@
+@import "tailwindcss";
+@import "../tokens.css";
+
+@layer base {
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink-2);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-style: normal;
+    color: var(--color-ink);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  /* Focus rings show instantly, never animated */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .shell {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: clamp(1rem, 4vw, 2.5rem);
+  }
+
+  /* Machine-readout voice: meta, status, kbd hints */
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    height: 2.5rem;
+    padding-inline: var(--space-md);
+    border: 1px solid var(--color-rule-2);
+    border-radius: var(--radius-sm);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-micro) var(--ease-out),
+      border-color var(--dur-micro) var(--ease-out),
+      transform var(--dur-micro) var(--ease-out);
+  }
+  .btn:hover {
+    border-color: var(--color-ink-2);
+    background: var(--color-paper-2);
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn:disabled {
+    cursor: not-allowed;
+    color: var(--color-muted);
+    border-color: var(--color-rule);
+    background: var(--color-paper-2);
+  }
+  .btn--primary {
+    border-color: var(--color-accent-strong);
+    background: var(--color-accent-strong);
+    color: var(--color-accent-ink);
+  }
+  .btn--primary:hover {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+  }
+  .btn--on-graphite {
+    border-color: var(--color-graphite-rule);
+    background: var(--color-graphite);
+    color: var(--color-graphite-ink);
+  }
+  .btn--on-graphite:hover {
+    border-color: var(--color-graphite-muted);
+    background: var(--color-graphite-2);
+  }
+  .btn--light {
+    border-color: var(--color-graphite-ink);
+    background: var(--color-graphite-ink);
+    color: var(--color-graphite);
+  }
+  .btn--light:hover {
+    border-color: var(--color-paper);
+    background: var(--color-paper);
+  }
+  .btn[data-state="success"] {
+    border-color: var(--color-accent);
+  }
+
+  /* Text link: cobalt underline grows on hover */
+  .link {
+    color: var(--color-ink);
+    font-weight: 500;
+    white-space: nowrap;
+    background-image: linear-gradient(var(--color-accent), var(--color-accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0 1px;
+    transition: background-size var(--dur-short) var(--ease-out);
+  }
+  .link:hover,
+  .link[aria-current="true"] {
+    background-size: 100% 1px;
+  }
+
+  .kbd {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.375rem;
+    height: 1.375rem;
+    padding-inline: 0.3rem;
+    border: 1px solid var(--color-rule-2);
+    border-radius: 4px;
+    background: var(--color-paper);
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+  }
+
+  /* N13: the visible search affordance in the bar */
+  .searchpill {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    height: 2.5rem;
+    width: 100%;
+    padding-inline: var(--space-sm) var(--space-xs);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    background: var(--color-paper-2);
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: border-color var(--dur-short) var(--ease-out);
+  }
+  .searchpill:hover {
+    border-color: var(--color-rule-2);
+  }
+
+  /* Portfolio Grid card: hairline surface, border turns cobalt on hover */
+  .card {
+    transition: border-color var(--dur-short) var(--ease-out);
+  }
+  .card:hover,
+  .card:focus-within {
+    border-color: var(--color-accent);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    height: 2.25rem;
+    padding-inline: var(--space-sm);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    color: var(--color-ink-2);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      border-color var(--dur-micro) var(--ease-out),
+      background-color var(--dur-micro) var(--ease-out);
+  }
+  .chip:hover {
+    border-color: var(--color-rule-2);
+  }
+  .chip[aria-pressed="true"] {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+}
+
+/* One orchestrated entrance on load, plus the card fade on filter change */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise var(--dur-long) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+.card-fade {
+  animation: fade var(--dur-short) var(--ease-out) both;
+}
+.scrim-in {
+  animation: fade var(--dur-short) var(--ease-out) both;
+}
+.panel-in {
+  animation: panel-in var(--dur-short) var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 150ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 150ms !important;
+  }
+  .rise,
+  .panel-in {
+    animation-name: fade;
+  }
+}
