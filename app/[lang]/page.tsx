@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { AppStateProvider } from "@/components/app-state";
 import { CommandPalette } from "@/components/command-palette";
 import { CopyEmail } from "@/components/copy-email";
+import { ExperienceTimeline } from "@/components/experience-timeline";
+import { RevealObserver } from "@/components/reveal-observer";
 import { SiteNav } from "@/components/site-nav";
 import { WorkGrid } from "@/components/work-grid";
 import { dictionaries } from "@/content/dictionary";
@@ -35,10 +37,32 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
   const content = getContent(lang);
   const { profile } = content;
 
-  const facts = [
-    { label: dict.intro.now, value: profile.current },
-    { label: dict.intro.based, value: profile.location },
-    { label: dict.intro.studied, value: profile.degree },
+  // Every figure is counted from the content itself or quoted from the CV.
+  const stats = [
+    {
+      label: dict.stats.projects,
+      to: content.projects.length,
+      text: String(content.projects.length),
+      prefix: "",
+    },
+    {
+      label: dict.stats.roles,
+      to: content.experience.length,
+      text: String(content.experience.length),
+      prefix: "",
+    },
+    {
+      label: dict.stats.certifications,
+      to: content.certifications.length,
+      text: String(content.certifications.length),
+      prefix: "",
+    },
+    {
+      label: dict.stats.gpa,
+      to: 70,
+      text: `3${dict.stats.decimal}70`,
+      prefix: `3${dict.stats.decimal}`,
+    },
   ];
 
   return (
@@ -51,7 +75,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
       />
 
       <main id="main" className="flex-1">
-        <section className="shell grid gap-10 pt-12 pb-16 md:grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)] md:items-end md:gap-14 md:pt-20 md:pb-24">
+        <section className="shell grid gap-12 pt-12 pb-16 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.9fr)] lg:items-center lg:gap-16 lg:pt-20 lg:pb-24">
           <div>
             <p
               className="label rise flex items-center gap-2.5"
@@ -61,10 +85,18 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
               {profile.role}
             </p>
             <h1
-              className="rise mt-4 max-w-[17ch] text-display font-semibold"
+              className="rise mt-5 max-w-[15ch] text-display leading-[1.05] font-semibold tracking-[-0.035em]"
               style={{ "--i": 1 } as React.CSSProperties}
             >
-              {profile.headline}
+              {profile.headline.map((part) =>
+                part.accent ? (
+                  <span key={part.text} className="text-accent-strong">
+                    {part.text}
+                  </span>
+                ) : (
+                  part.text
+                ),
+              )}
             </h1>
             <p
               className="rise mt-5 max-w-[60ch]"
@@ -89,67 +121,139 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                 <ArrowUpRight aria-hidden className="size-3.5" />
               </a>
             </div>
-            <dl
-              className="rise mt-10 grid gap-x-8 gap-y-1 border-t border-rule pt-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-y-3"
-              style={{ "--i": 4 } as React.CSSProperties}
-            >
-              {facts.map((fact) => (
-                <div key={fact.label} className="contents">
-                  <dt className="label pt-0.5 not-first:mt-3 sm:not-first:mt-0">
-                    {fact.label}
-                  </dt>
-                  <dd className="text-sm text-ink">{fact.value}</dd>
-                </div>
-              ))}
-            </dl>
           </div>
 
-          <figure
-            className="rise relative aspect-[4/5] w-full max-w-sm overflow-hidden rounded-md border border-rule bg-paper-2 md:justify-self-end"
+          <div
+            className="rise relative grid gap-5 sm:grid-cols-2 sm:items-end lg:block lg:justify-self-end lg:pb-12 lg:pl-14"
             style={{ "--i": 2 } as React.CSSProperties}
           >
-            <Image
-              src={profile.portrait}
-              alt={dict.intro.portraitAlt}
-              fill
-              priority
-              sizes="(min-width: 48rem) 24rem, 100vw"
-              className="origin-[47%_26%] scale-[1.7] object-cover object-top"
-            />
-          </figure>
+            <figure className="relative aspect-[4/5] w-full overflow-hidden rounded-md border border-rule bg-paper-2 lg:w-[21rem]">
+              <Image
+                src={profile.portrait}
+                alt={dict.intro.portraitAlt}
+                fill
+                priority
+                sizes="(min-width: 64rem) 21rem, (min-width: 40rem) 50vw, 100vw"
+                className="origin-[47%_26%] scale-[1.7] object-cover object-top"
+              />
+            </figure>
+
+            {/* Typographic code block, not a drawn window: label, rule, code */}
+            <div className="code-card lg:absolute lg:bottom-0 lg:left-0 lg:w-[19rem]">
+              <p className="tok-dim border-b border-graphite-rule px-4 py-2 tracking-[0.06em] uppercase">
+                profile.ts
+              </p>
+              <pre className="overflow-x-auto px-4 py-3">
+                <code>
+                  <span
+                    className="type-in"
+                    style={{ "--chars": 16 } as React.CSSProperties}
+                  >
+                    <span className="tok-dim">const</span> raihan = {"{"}
+                  </span>
+                  <span aria-hidden className="caret" />
+                  {"\n"}
+                  <span
+                    className="code-line"
+                    style={{ "--i": 0 } as React.CSSProperties}
+                  >
+                    {"  "}
+                    <span className="tok-key">role</span>
+                    <span className="tok-dim">: </span>
+                    {`"${content.codeCard.role}"`}
+                    <span className="tok-dim">,</span>
+                    {"\n"}
+                  </span>
+                  <span
+                    className="code-line"
+                    style={{ "--i": 1 } as React.CSSProperties}
+                  >
+                    {"  "}
+                    <span className="tok-key">focus</span>
+                    <span className="tok-dim">: [</span>
+                    {"\n"}
+                    {content.codeCard.focus.map((item) => (
+                      <span key={item}>
+                        {`    "${item}"`}
+                        <span className="tok-dim">,</span>
+                        {"\n"}
+                      </span>
+                    ))}
+                    <span className="tok-dim">{"  ],"}</span>
+                    {"\n"}
+                  </span>
+                  <span
+                    className="code-line"
+                    style={{ "--i": 2 } as React.CSSProperties}
+                  >
+                    {"  "}
+                    <span className="tok-key">now</span>
+                    <span className="tok-dim">: </span>
+                    {`"${content.codeCard.now}"`}
+                    <span className="tok-dim">,</span>
+                    {"\n"}
+                  </span>
+                  <span
+                    className="code-line"
+                    style={{ "--i": 3 } as React.CSSProperties}
+                  >
+                    {"  "}
+                    <span className="tok-key">based</span>
+                    <span className="tok-dim">: </span>
+                    {`"${content.codeCard.based}"`}
+                    <span className="tok-dim">,</span>
+                    {"\n"}
+                    {"};"}
+                  </span>
+                </code>
+              </pre>
+            </div>
+          </div>
         </section>
 
-        <section id="work" className="shell border-t border-rule py-16 md:py-20">
-          <h2 className="text-xl font-semibold">{dict.work.title}</h2>
-          <p className="mt-2 max-w-[60ch]">{dict.work.tagline}</p>
-          <WorkGrid projects={content.projects} dict={dict.work} />
-        </section>
-
-        <section id="experience" className="shell pt-8 pb-20 md:pb-28">
-          <h2 className="text-xl font-semibold">{dict.experience.title}</h2>
-          <ol className="mt-8 border-t border-rule">
-            {content.experience.map((job) => (
-              <li
-                key={`${job.company}-${job.period}`}
-                className="grid gap-2 border-b border-rule py-6 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-8"
-              >
-                <p className="label pt-1 tabular-nums">
-                  {job.period}
-                  <span className="mt-1 block">{job.place}</span>
-                </p>
-                <div>
-                  <h3 className="text-lg font-semibold">{job.role}</h3>
-                  <p className="mt-0.5 text-sm text-ink">{job.company}</p>
-                  <Points items={job.points} />
-                </div>
-              </li>
+        <div className="border-y border-rule bg-paper-2">
+          <dl className="reveal shell grid grid-cols-2 gap-x-6 gap-y-8 py-10 lg:grid-cols-4">
+            {stats.map((stat) => (
+              <div key={stat.label} className="flex flex-col-reverse gap-1">
+                <dt className="label">{stat.label}</dt>
+                <dd className="font-display text-stat leading-none font-semibold tracking-[-0.03em] text-ink tabular-nums">
+                  <span className="sr-only">{stat.text}</span>
+                  <span aria-hidden>
+                    {stat.prefix}
+                    <span
+                      className="count"
+                      style={{ "--to": stat.to } as React.CSSProperties}
+                    />
+                  </span>
+                </dd>
+              </div>
             ))}
-          </ol>
+          </dl>
+        </div>
+
+        <section id="work" className="shell py-16 md:py-24">
+          <div className="reveal">
+            <h2 className="text-xl font-semibold">{dict.work.title}</h2>
+            <p className="mt-2 max-w-[60ch]">{dict.work.tagline}</p>
+          </div>
+          <div className="reveal" style={{ "--i": 1 } as React.CSSProperties}>
+            <WorkGrid projects={content.projects} dict={dict.work} />
+          </div>
+        </section>
+
+        <section
+          id="experience"
+          className="shell border-t border-rule py-16 md:py-24"
+        >
+          <div className="reveal">
+            <h2 className="text-xl font-semibold">{dict.experience.title}</h2>
+            <ExperienceTimeline jobs={content.experience} />
+          </div>
         </section>
 
         <section id="skills" className="border-y border-rule bg-paper-2">
           <div className="shell grid gap-12 py-16 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-16 lg:py-20">
-            <div>
+            <div className="reveal">
               <h2 className="text-xl font-semibold">{dict.skills.title}</h2>
               {content.skillGroups.map((group) => (
                 <div key={group.title} className="mt-8">
@@ -173,7 +277,10 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
               <p className="mt-2 text-sm">{content.languages.join(" · ")}</p>
             </div>
 
-            <div className="flex flex-col gap-10">
+            <div
+              className="reveal flex flex-col gap-10"
+              style={{ "--i": 1 } as React.CSSProperties}
+            >
               <div>
                 <h3 className="text-base font-semibold">
                   {dict.skills.education}
@@ -231,7 +338,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
         </section>
 
         <section id="contact" className="bg-graphite text-graphite-muted">
-          <div className="shell grid gap-10 py-20 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-end md:gap-14 md:py-28">
+          <div className="reveal shell grid gap-10 py-20 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-end md:gap-14 md:py-28">
             <div>
               <h2 className="max-w-[17ch] text-display font-semibold text-graphite-ink">
                 {dict.contact.title}
@@ -275,6 +382,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
         </p>
       </footer>
 
+      <RevealObserver />
       <CommandPalette
         locale={lang}
         email={profile.email}

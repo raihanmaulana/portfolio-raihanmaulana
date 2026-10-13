@@ -15,10 +15,6 @@ export const profile = {
     id: "Analyst · Fullstack dan IT Audit & Advisory",
     en: "Analyst · Fullstack and IT Audit & Advisory",
   },
-  headline: {
-    id: "Analyst yang membangun sistem dan mengauditnya.",
-    en: "An analyst who builds systems and audits them.",
-  },
   lede: {
     id: "Saya Muhammad Raihan Maulana. Saya bekerja di dua sisi teknologi: IT audit dan advisory (tata kelola TI, risiko teknologi, dan kepatuhan regulasi di industri perbankan) serta pengembangan perangkat lunak dengan SAP ABAP, Laravel, dan MySQL.",
     en: "I'm Muhammad Raihan Maulana. I work on both sides of technology: IT audit and advisory (IT governance, technology risk and regulatory compliance in banking) and software development with SAP ABAP, Laravel and MySQL.",
@@ -32,6 +28,32 @@ export const profile = {
     en: "Computer Engineering, Universitas Diponegoro",
   },
 } satisfies Record<string, string | L10n>;
+
+// Headline in parts so the two verbs can carry the accent colour.
+const headline: L10n<{ text: string; accent?: boolean }[]> = {
+  id: [
+    { text: "Analyst yang " },
+    { text: "membangun", accent: true },
+    { text: " sistem dan " },
+    { text: "mengaudit", accent: true },
+    { text: "nya." },
+  ],
+  en: [
+    { text: "An analyst who " },
+    { text: "builds", accent: true },
+    { text: " systems and " },
+    { text: "audits", accent: true },
+    { text: " them." },
+  ],
+};
+
+// The hero code card: the same facts as the CV, set as an object literal.
+const codeCard = {
+  role: "Analyst",
+  focus: ["Fullstack", "IT Audit & Advisory"],
+  now: "SAP FPSL Specialist @ BRI",
+  based: "Banten, ID",
+};
 
 export const filterIds = [
   "laravel",
@@ -654,11 +676,12 @@ export function getContent(locale: Locale) {
     profile: {
       ...profile,
       role: profile.role[locale],
-      headline: profile.headline[locale],
+      headline: headline[locale],
       lede: profile.lede[locale],
       current: profile.current[locale],
       degree: profile.degree[locale],
     },
+    codeCard,
     projects,
     experience: experienceSources.map((e) => ({
       company: e.company,

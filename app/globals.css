@@ -176,13 +176,120 @@
     border-color: var(--color-rule-2);
   }
 
-  /* Portfolio Grid card: hairline surface, border turns cobalt on hover */
+  /* Portfolio Grid card: hairline surface, border turns cobalt on hover
+     while the screenshot eases in a touch */
   .card {
     transition: border-color var(--dur-short) var(--ease-out);
   }
   .card:hover,
   .card:focus-within {
     border-color: var(--color-accent);
+  }
+  .card img {
+    transition: transform var(--dur-long) var(--ease-out);
+  }
+  .card .card__arrow {
+    transition: transform var(--dur-short) var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover img {
+      transform: scale(1.03);
+    }
+    .card:hover .card__arrow {
+      transform: translateX(3px);
+    }
+  }
+
+  /* Scroll progress: a cobalt hairline on the nav's bottom edge */
+  .scroll-progress {
+    display: none;
+    position: absolute;
+    inset-inline: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--color-accent);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      display: block;
+      animation: progress linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+
+  /* The hero code card */
+  .code-card {
+    border: 1px solid var(--color-graphite-rule);
+    border-radius: var(--radius-md);
+    background: var(--color-graphite);
+    box-shadow: var(--shadow-panel);
+    color: var(--color-graphite-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: 1.75;
+  }
+  .tok-key {
+    color: var(--color-graphite-accent);
+  }
+  .tok-dim {
+    color: var(--color-graphite-muted);
+  }
+  .code-line {
+    animation: fade var(--dur-long) var(--ease-out) both;
+    animation-delay: calc(1100ms + var(--i, 0) * 90ms);
+  }
+  /* One line types in once, then stays */
+  .type-in {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: bottom;
+    width: 0;
+    animation: typing 800ms steps(var(--chars)) 300ms forwards;
+  }
+  .caret {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.1em;
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    background: var(--color-graphite-accent);
+    animation: blink 1s steps(1) 5 both;
+  }
+
+  /* Experience timeline */
+  .timeline__panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--dur-long) var(--ease-in-out);
+  }
+  .timeline__item[data-open="true"] .timeline__panel {
+    grid-template-rows: 1fr;
+  }
+  .timeline__chevron {
+    transition: transform var(--dur-short) var(--ease-out);
+  }
+  .timeline__item[data-open="true"] .timeline__chevron {
+    transform: rotate(180deg);
+  }
+  .timeline__dot {
+    transition: background-color var(--dur-short) var(--ease-out);
+  }
+  .timeline__item[data-open="true"] .timeline__dot {
+    background: var(--color-accent);
+  }
+
+  /* Stat figures count up once, when their row is revealed */
+  .count {
+    counter-reset: n var(--n);
+  }
+  .count::after {
+    content: counter(n);
+  }
+  .reveal[data-in] .count {
+    animation: count 1100ms var(--ease-out) both;
   }
 
   .chip {
@@ -240,9 +347,55 @@
   }
 }
 
+@keyframes progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes typing {
+  to {
+    width: calc(var(--chars) * 1ch);
+  }
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+@property --n {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+@keyframes count {
+  from {
+    --n: 0;
+  }
+  to {
+    --n: var(--to);
+  }
+}
+
 .rise {
   animation: rise var(--dur-long) var(--ease-out) both;
   animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* Sections fade and rise once as they enter the viewport */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 600ms var(--ease-out),
+    transform 600ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+.reveal[data-in] {
+  opacity: 1;
+  transform: none;
+}
+.count {
+  --n: var(--to);
 }
 .card-fade {
   animation: fade var(--dur-short) var(--ease-out) both;
@@ -269,5 +422,20 @@
   .rise,
   .panel-in {
     animation-name: fade;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .type-in {
+    width: auto;
+    animation: none;
+  }
+  .caret,
+  .scroll-progress {
+    display: none;
+  }
+  .reveal[data-in] .count {
+    animation: none;
   }
 }

@@ -24,6 +24,13 @@ const id = {
     studied: "Pendidikan",
     portraitAlt: "Foto Muhammad Raihan Maulana",
   },
+  stats: {
+    projects: "proyek web",
+    roles: "peran kerja",
+    certifications: "sertifikasi",
+    gpa: "IPK, lulus Cum Laude",
+    decimal: ",",
+  },
   work: {
     title: "Karya terpilih",
     tagline:
@@ -31,6 +38,8 @@ const id = {
     all: "Semua",
     filterLabel: "Saring proyek berdasarkan teknologi",
     view: "Lihat detail",
+    showAll: "Tampilkan semua proyek",
+    showLess: "Tampilkan lebih sedikit",
     close: "Tutup",
     whatIDid: "Yang dikerjakan",
     screenshot: "Tangkapan layar",
@@ -96,6 +105,13 @@ const en: Dictionary = {
     studied: "Education",
     portraitAlt: "Photo of Muhammad Raihan Maulana",
   },
+  stats: {
+    projects: "web projects",
+    roles: "roles held",
+    certifications: "certifications",
+    gpa: "GPA, graduated Cum Laude",
+    decimal: ".",
+  },
   work: {
     title: "Selected work",
     tagline:
@@ -103,6 +119,8 @@ const en: Dictionary = {
     all: "All",
     filterLabel: "Filter projects by technology",
     view: "View details",
+    showAll: "Show all projects",
+    showLess: "Show fewer",
     close: "Close",
     whatIDid: "What I did",
     screenshot: "Screenshot",

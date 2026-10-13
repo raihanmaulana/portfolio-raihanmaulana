@@ -2,7 +2,7 @@
 
 import { Search } from "lucide-react";
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { useAppState } from "@/components/app-state";
 import type { Dictionary } from "@/content/dictionary";
@@ -19,6 +19,32 @@ function useIsApple() {
   );
 }
 
+const SECTION_IDS = ["work", "experience", "skills", "contact"];
+
+// Scroll spy: the section crossing the middle of the viewport is the active one.
+function useActiveSection() {
+  const [active, setActive] = useState<string | null>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActive(entry.target.id);
+          else setActive((current) => (current === entry.target.id ? null : current));
+        }
+      },
+      { rootMargin: "-45% 0px -55% 0px" },
+    );
+    for (const id of SECTION_IDS) {
+      const section = document.getElementById(id);
+      if (section) observer.observe(section);
+    }
+    return () => observer.disconnect();
+  }, []);
+
+  return active;
+}
+
 type Props = {
   locale: Locale;
   name: string;
@@ -30,10 +56,12 @@ export function SiteNav({ locale, name, email, dict }: Props) {
   const { setPaletteOpen } = useAppState();
   const isApple = useIsApple();
 
+  const active = useActiveSection();
+
   const links = [
-    { href: "#work", label: dict.work },
-    { href: "#experience", label: dict.experience },
-    { href: "#skills", label: dict.skills },
+    { id: "work", label: dict.work },
+    { id: "experience", label: dict.experience },
+    { id: "skills", label: dict.skills },
   ];
 
   return (
@@ -65,8 +93,9 @@ export function SiteNav({ locale, name, email, dict }: Props) {
         <nav className="ml-auto flex items-center gap-3 md:gap-5">
           {links.map((link) => (
             <a
-              key={link.href}
-              href={link.href}
+              key={link.id}
+              href={`#${link.id}`}
+              aria-current={active === link.id ? "true" : undefined}
               className="link hidden text-sm lg:inline"
             >
               {link.label}
@@ -108,6 +137,7 @@ export function SiteNav({ locale, name, email, dict }: Props) {
           </a>
         </nav>
       </div>
+      <span aria-hidden className="scroll-progress" />
     </header>
   );
 }

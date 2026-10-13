@@ -26,11 +26,15 @@ type Props = {
   dict: Dictionary["work"];
 };
 
-function StackTags({ stack }: { stack: string[] }) {
+const INITIAL_COUNT = 5;
+
+function StackTags({ stack, max }: { stack: string[]; max?: number }) {
   if (stack.length === 0) return null;
+  const shown = max ? stack.slice(0, max) : stack;
+  const hidden = stack.length - shown.length;
   return (
     <ul className="flex flex-wrap gap-1.5">
-      {stack.map((item) => (
+      {shown.map((item) => (
         <li
           key={item}
           className="inline-flex h-6 items-center rounded-sm border border-rule px-1.5 font-mono text-xs text-muted"
@@ -38,6 +42,11 @@ function StackTags({ stack }: { stack: string[] }) {
           {item}
         </li>
       ))}
+      {hidden > 0 ? (
+        <li className="inline-flex h-6 items-center font-mono text-xs text-muted">
+          +{hidden}
+        </li>
+      ) : null}
     </ul>
   );
 }
@@ -46,10 +55,17 @@ export function WorkGrid({ projects, dict }: Props) {
   const [filter, setFilter] = useState<FilterId | "all">("all");
   const { projectSlug, setProjectSlug } = useAppState();
 
-  const visible =
+  const [showAll, setShowAll] = useState(false);
+
+  const matching =
     filter === "all"
       ? projects
       : projects.filter((project) => project.filters.includes(filter));
+  // The unfiltered view opens on a short selection so the page is not a wall
+  // of cards; one wide card plus four fills two rows exactly.
+  const collapsible = filter === "all" && projects.length > INITIAL_COUNT;
+  const visible =
+    collapsible && !showAll ? matching.slice(0, INITIAL_COUNT) : matching;
   const active = projects.find((project) => project.slug === projectSlug);
 
   const chips = [
@@ -95,20 +111,29 @@ export function WorkGrid({ projects, dict }: Props) {
               key={project.slug}
               className={cn(
                 "card card-fade relative flex flex-col overflow-hidden rounded-md border border-rule bg-paper",
-                wide && "lg:col-span-2",
+                wide && "sm:col-span-2 lg:flex-row",
               )}
+              style={
+                { animationDelay: `${Math.min(index, 8) * 40}ms` } as React.CSSProperties
+              }
             >
-              <div className="relative aspect-[15/8] border-b border-rule bg-paper-2">
+              <div
+                className={cn(
+                  "relative aspect-[15/8] shrink-0 overflow-hidden border-b border-rule bg-paper-2",
+                  wide &&
+                    "lg:aspect-auto lg:min-h-[20rem] lg:w-[58%] lg:border-r lg:border-b-0",
+                )}
+              >
                 <Image
                   src={project.images[0]}
                   alt=""
                   fill
                   sizes={
                     wide
-                      ? "(min-width: 64rem) 46rem, (min-width: 40rem) 50vw, 100vw"
+                      ? "(min-width: 64rem) 40rem, 100vw"
                       : "(min-width: 64rem) 23rem, (min-width: 40rem) 50vw, 100vw"
                   }
-                  className="object-cover object-top"
+                  className="object-cover object-left-top"
                 />
               </div>
               <div className="flex flex-1 flex-col gap-3 p-5">
@@ -116,21 +141,42 @@ export function WorkGrid({ projects, dict }: Props) {
                   <p className="label">{project.context}</p>
                 ) : null}
                 <h3 className="text-lg font-semibold">{project.title}</h3>
-                <p className="line-clamp-3 text-sm">{project.summary}</p>
-                <StackTags stack={project.stack} />
+                <p className={cn("text-sm", !wide && "line-clamp-2")}>
+                  {project.summary}
+                </p>
+                <StackTags stack={project.stack} max={3} />
                 <button
                   type="button"
                   className="link mt-auto inline-flex cursor-pointer items-center gap-1.5 self-start pt-2 text-sm after:absolute after:inset-0"
                   onClick={() => setProjectSlug(project.slug)}
                 >
                   {dict.view}
-                  <ArrowRight aria-hidden className="size-3.5" />
+                  <ArrowRight aria-hidden className="card__arrow size-3.5" />
                 </button>
               </div>
             </li>
           );
         })}
       </ul>
+
+      {collapsible ? (
+        <div className="mt-8 flex items-center gap-4">
+          <button
+            type="button"
+            className="btn"
+            aria-expanded={showAll}
+            onClick={() => setShowAll(!showAll)}
+          >
+            {showAll ? dict.showLess : dict.showAll}
+            {showAll ? null : (
+              <span className="font-mono text-xs text-muted tabular-nums">
+                {projects.length}
+              </span>
+            )}
+          </button>
+          <span aria-hidden className="h-px flex-1 bg-rule" />
+        </div>
+      ) : null}
 
       <Dialog
         open={Boolean(active)}

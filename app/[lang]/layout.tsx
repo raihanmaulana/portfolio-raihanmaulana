@@ -63,6 +63,10 @@ export default async function RootLayout({
       className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}
     >
       <body className="flex min-h-dvh flex-col">
+        {/* Without JavaScript nothing marks sections as revealed, so show them */}
+        <noscript>
+          <style>{".reveal{opacity:1;transform:none}"}</style>
+        </noscript>
         <a
           href="#main"
           className="btn sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-3 focus-visible:left-3 focus-visible:z-(--z-modal)"
