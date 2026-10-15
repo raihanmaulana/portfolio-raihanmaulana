@@ -1,15 +1,61 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ImageIcon } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
+import type { Dictionary } from "@/content/dictionary";
 import type { Content } from "@/content/site";
 
 type Props = {
   jobs: Content["experience"];
+  labels: Dictionary["experience"];
 };
 
-export function ExperienceTimeline({ jobs }: Props) {
+// Three photo slots per role. A slot without a file shows a labelled
+// placeholder until the photo is added under public/images/experience/.
+function PhotoSlots({
+  job,
+  labels,
+}: {
+  job: Content["experience"][number];
+  labels: Dictionary["experience"];
+}) {
+  return (
+    <ul className="grid max-w-[40rem] grid-cols-3 gap-2 pb-6 sm:gap-3">
+      {job.images.map((src, index) => (
+        <li
+          key={index}
+          className={
+            src
+              ? "relative aspect-[4/3] overflow-hidden rounded-sm border border-rule bg-paper-2"
+              : "grid aspect-[4/3] place-items-center rounded-sm border border-dashed border-rule-2 bg-paper-2 text-muted"
+          }
+        >
+          {src ? (
+            <Image
+              src={src}
+              alt={`${labels.photo} ${index + 1}: ${job.role}, ${job.company}`}
+              fill
+              sizes="(min-width: 40rem) 13rem, 30vw"
+              className="object-cover"
+            />
+          ) : (
+            <span className="flex flex-col items-center gap-1.5 px-1 text-center">
+              <ImageIcon aria-hidden className="size-4" />
+              <span className="font-mono text-[0.6875rem] leading-tight">
+                {labels.photo} {index + 1}
+                <span className="hidden sm:inline"> · {labels.pending}</span>
+              </span>
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export function ExperienceTimeline({ jobs, labels }: Props) {
   const [open, setOpen] = useState(0);
 
   return (
@@ -55,20 +101,23 @@ export function ExperienceTimeline({ jobs }: Props) {
               className="timeline__panel md:pl-[12.5rem]"
               inert={!isOpen}
             >
-              <ul className="flex min-h-0 max-w-[68ch] flex-col gap-1.5 overflow-hidden">
-                {job.points.map((point, pointIndex) => (
-                  <li
-                    key={point}
-                    className={`flex gap-3 text-sm ${pointIndex === job.points.length - 1 ? "pb-5" : ""}`}
-                  >
-                    <span
-                      aria-hidden
-                      className="mt-[0.55rem] size-1.5 shrink-0 bg-rule-2"
-                    />
-                    {point}
-                  </li>
-                ))}
-              </ul>
+              <div className="min-h-0 overflow-hidden">
+                <ul className="flex max-w-[68ch] flex-col gap-1.5">
+                  {job.points.map((point, pointIndex) => (
+                    <li
+                      key={point}
+                      className={`flex gap-3 text-sm ${pointIndex === job.points.length - 1 ? "pb-4" : ""}`}
+                    >
+                      <span
+                        aria-hidden
+                        className="mt-[0.55rem] size-1.5 shrink-0 bg-rule-2"
+                      />
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+                <PhotoSlots job={job} labels={labels} />
+              </div>
             </div>
           </li>
         );

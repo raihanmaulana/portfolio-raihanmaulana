@@ -21,7 +21,7 @@ export function CopyEmail({ email, label, copiedLabel }: Props) {
   return (
     <button
       type="button"
-      className="btn btn--on-graphite"
+      className="btn"
       data-state={copied ? "success" : undefined}
       onClick={async () => {
         try {

@@ -32,6 +32,11 @@
   --color-graphite-muted: oklch(74% 0.012 252);
   --color-graphite-accent: oklch(74% 0.14 256);
 
+  /* Cool washes behind project screenshots, rotated per card */
+  --color-wash-1: oklch(93% 0.032 256);
+  --color-wash-2: oklch(94% 0.024 228);
+  --color-wash-3: oklch(94.5% 0.016 272);
+
   /* Overlay modifiers */
   --color-scrim: oklch(24% 0.02 258 / 0.42);
   --color-paper-veil: oklch(98.5% 0.004 250 / 0.86);

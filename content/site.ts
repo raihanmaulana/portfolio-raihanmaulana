@@ -1,3 +1,7 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+
+import type { FilterId } from "@/content/filters";
 import type { L10n, Locale } from "@/lib/i18n";
 
 // Every fact in this file comes from the CV and the portfolio PDF.
@@ -55,24 +59,6 @@ const codeCard = {
   based: "Banten, ID",
 };
 
-export const filterIds = [
-  "laravel",
-  "php",
-  "java-vue",
-  "react-next",
-  "python",
-] as const;
-
-export type FilterId = (typeof filterIds)[number];
-
-export const filterLabels: Record<FilterId, string> = {
-  laravel: "Laravel",
-  php: "PHP",
-  "java-vue": "Java & Vue.js",
-  "react-next": "React & Next.js",
-  python: "Python",
-};
-
 type ProjectSource = {
   slug: string;
   title: string;
@@ -81,6 +67,8 @@ type ProjectSource = {
   points: L10n<string[]>;
   stack: string[];
   filters: FilterId[];
+  // Live demo links from the portfolio PDF that still responded when checked.
+  demos?: string[];
 };
 
 const projectSources: ProjectSource[] = [
@@ -184,6 +172,7 @@ const projectSources: ProjectSource[] = [
   },
   {
     slug: "sistem-kepegawaian",
+    demos: ["https://siganteng.bkpsdmpamekasan.id/siganteng_tenan/landingpage"],
     title: "Sistem Informasi Kepegawaian",
     summary: {
       id: "Website sistem informasi kepegawaian dengan fitur kenaikan pangkat, data pribadi pegawai, dan manajemen cuti.",
@@ -206,6 +195,7 @@ const projectSources: ProjectSource[] = [
   },
   {
     slug: "petshop",
+    demos: ["https://dev-radhiyanpetncare.vercel.app/"],
     title: "Radhyian Pet and Care (Petshop)",
     summary: {
       id: "Website operasional petshop: stok produk, booking layanan, data pelanggan, dan transaksi.",
@@ -408,6 +398,10 @@ const projectSources: ProjectSource[] = [
   },
   {
     slug: "portfolio-nextjs",
+    demos: [
+      "https://portofolio-raihanmaulana.vercel.app/",
+      "https://raihanm-portofolio.vercel.app/",
+    ],
     title: "Personal Portfolio Web",
     context: { id: "Proyek pribadi", en: "Personal project" },
     summary: {
@@ -436,6 +430,7 @@ const projectSources: ProjectSource[] = [
 ];
 
 type ExperienceSource = {
+  slug: string;
   company: string;
   place: string;
   role: L10n;
@@ -445,6 +440,7 @@ type ExperienceSource = {
 
 const experienceSources: ExperienceSource[] = [
   {
+    slug: "bri",
     company: "PT Bank Rakyat Indonesia",
     place: "Jakarta Selatan",
     role: {
@@ -468,6 +464,7 @@ const experienceSources: ExperienceSource[] = [
     },
   },
   {
+    slug: "cimb-niaga",
     company: "PT CIMB Niaga Tbk",
     place: "Tangerang Selatan",
     role: { id: "IT Audit & Advisory", en: "IT Audit & Advisory" },
@@ -486,6 +483,7 @@ const experienceSources: ExperienceSource[] = [
     },
   },
   {
+    slug: "united-tractors",
     company: "PT United Tractors Pandu Engineering (Astra Group)",
     place: "Cikarang",
     role: { id: "SAP ABAP Developer", en: "SAP ABAP Developer" },
@@ -504,6 +502,7 @@ const experienceSources: ExperienceSource[] = [
     },
   },
   {
+    slug: "awan-networks",
     company: "PT Awan Networks Indonesia",
     place: "Semarang",
     role: { id: "Backend Developer", en: "Backend Developer" },
@@ -522,6 +521,7 @@ const experienceSources: ExperienceSource[] = [
     },
   },
   {
+    slug: "undip-asisten",
     company: "Universitas Diponegoro",
     place: "Semarang",
     role: {
@@ -543,6 +543,7 @@ const experienceSources: ExperienceSource[] = [
     },
   },
   {
+    slug: "simian",
     company: "PT Simian Technologies",
     place: "Jakarta Pusat",
     role: {
@@ -587,6 +588,73 @@ const skillGroups: { title: L10n; items: string[] }[] = [
       "RESTful API",
       "System Integration",
       "Microsoft Excel",
+    ],
+  },
+];
+
+// The "two sides" band: what each discipline covers, worded from the CV.
+type Discipline = {
+  title: L10n;
+  items: { title: L10n; body: L10n; tags: string[] }[];
+};
+
+const disciplines: [Discipline, Discipline] = [
+  {
+    title: { id: "Membangun", en: "Build" },
+    items: [
+      {
+        title: { id: "Backend dan web", en: "Backend and web" },
+        body: {
+          id: "Sistem backend produksi dengan Laravel dan MySQL, serta frontend dengan Vue.js dan React.",
+          en: "Production backend systems in Laravel and MySQL, plus frontends in Vue.js and React.",
+        },
+        tags: ["Laravel", "MySQL", "RESTful API"],
+      },
+      {
+        title: { id: "SAP ERP", en: "SAP ERP" },
+        body: {
+          id: "Pengembangan ABAP, kustomisasi modul dan laporan, serta proses keuangan di SAP FPSL.",
+          en: "ABAP development, module and report customisation, and financial processes in SAP FPSL.",
+        },
+        tags: ["SAP ABAP", "SAP FPSL"],
+      },
+      {
+        title: { id: "Kualitas", en: "Quality" },
+        body: {
+          id: "Pengujian otomatis dan manual, debugging, dan rekonsiliasi data sebelum rilis.",
+          en: "Automated and manual testing, debugging and data reconciliation before release.",
+        },
+        tags: ["Testing", "System Integration"],
+      },
+    ],
+  },
+  {
+    title: { id: "Mengaudit dan menasihati", en: "Audit and advise" },
+    items: [
+      {
+        title: { id: "Audit TI", en: "IT audit" },
+        body: {
+          id: "Audit keamanan siber, aplikasi enterprise, dan operasional TI di industri perbankan.",
+          en: "Audits of cybersecurity, enterprise applications and IT operations in banking.",
+        },
+        tags: ["IT Audit", "Internal Control"],
+      },
+      {
+        title: { id: "Risiko dan kepatuhan", en: "Risk and compliance" },
+        body: {
+          id: "Menilai risiko teknologi dan kepatuhan terhadap regulasi perbankan Indonesia, SOP internal, dan standar tata kelola TI.",
+          en: "Assessing technology risk and compliance with Indonesian banking regulation, internal SOPs and IT governance standards.",
+        },
+        tags: ["Technology Risk", "IT Governance"],
+      },
+      {
+        title: { id: "Tata kelola proyek", en: "Project governance" },
+        body: {
+          id: "Mendampingi proyek TI dari sisi dokumentasi, kepatuhan, dan persiapan persetujuan regulator.",
+          en: "Supporting IT projects on documentation, compliance and preparation for regulatory approval.",
+        },
+        tags: ["IT Advisory", "Regulatory"],
+      },
     ],
   },
 ];
@@ -654,8 +722,20 @@ export type Project = {
   points: string[];
   stack: string[];
   filters: FilterId[];
+  demos: string[];
   images: [string, string];
 };
+
+export const EXPERIENCE_IMAGE_SLOTS = 3;
+
+// Photos for each role live at public/images/experience/<slug>-<n>.webp.
+// A slot without a file stays null and renders as an empty placeholder.
+function experienceImages(slug: string): (string | null)[] {
+  return Array.from({ length: EXPERIENCE_IMAGE_SLOTS }, (_, i) => {
+    const path = `/images/experience/${slug}-${i + 1}.webp`;
+    return existsSync(join(process.cwd(), "public", path)) ? path : null;
+  });
+}
 
 export function getContent(locale: Locale) {
   const projects: Project[] = projectSources.map((p) => ({
@@ -666,6 +746,7 @@ export function getContent(locale: Locale) {
     points: p.points[locale],
     stack: p.stack,
     filters: p.filters,
+    demos: p.demos ?? [],
     images: [
       `/images/projects/${p.slug}-1.webp`,
       `/images/projects/${p.slug}-2.webp`,
@@ -682,9 +763,19 @@ export function getContent(locale: Locale) {
       degree: profile.degree[locale],
     },
     codeCard,
+    disciplines: disciplines.map((d) => ({
+      title: d.title[locale],
+      items: d.items.map((item) => ({
+        title: item.title[locale],
+        body: item.body[locale],
+        tags: item.tags,
+      })),
+    })),
     projects,
     experience: experienceSources.map((e) => ({
+      slug: e.slug,
       company: e.company,
+      images: experienceImages(e.slug),
       place: e.place,
       role: e.role[locale],
       period: e.period[locale],

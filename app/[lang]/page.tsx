@@ -6,6 +6,7 @@ import { AppStateProvider } from "@/components/app-state";
 import { CommandPalette } from "@/components/command-palette";
 import { CopyEmail } from "@/components/copy-email";
 import { ExperienceTimeline } from "@/components/experience-timeline";
+import { TwoSides } from "@/components/two-sides";
 import { RevealObserver } from "@/components/reveal-observer";
 import { SiteNav } from "@/components/site-nav";
 import { WorkGrid } from "@/components/work-grid";
@@ -241,13 +242,15 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           </div>
         </section>
 
-        <section
-          id="experience"
-          className="shell border-t border-rule py-16 md:py-24"
-        >
+        <TwoSides disciplines={content.disciplines} dict={dict.twoSides} />
+
+        <section id="experience" className="shell py-16 md:py-24">
           <div className="reveal">
             <h2 className="text-xl font-semibold">{dict.experience.title}</h2>
-            <ExperienceTimeline jobs={content.experience} />
+            <ExperienceTimeline
+              jobs={content.experience}
+              labels={dict.experience}
+            />
           </div>
         </section>
 
@@ -337,10 +340,11 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
           </div>
         </section>
 
-        <section id="contact" className="bg-graphite text-graphite-muted">
+        <section id="contact" className="border-t border-rule">
           <div className="reveal shell grid gap-10 py-20 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-end md:gap-14 md:py-28">
             <div>
-              <h2 className="max-w-[17ch] text-display font-semibold text-graphite-ink">
+              <span aria-hidden className="block size-2.5 bg-accent" />
+              <h2 className="mt-6 max-w-[17ch] text-display leading-[1.05] font-semibold tracking-[-0.035em]">
                 {dict.contact.title}
               </h2>
               <p className="mt-4 max-w-[46ch]">{dict.contact.body}</p>
@@ -348,12 +352,15 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
             <div className="flex flex-col gap-5">
               <a
                 href={`mailto:${profile.email}`}
-                className="self-start font-mono text-base whitespace-nowrap text-graphite-ink underline decoration-graphite-accent underline-offset-[6px] sm:text-lg"
+                className="self-start font-mono text-base whitespace-nowrap text-ink underline decoration-accent underline-offset-[6px] hover:text-accent-strong sm:text-lg"
               >
                 {profile.email}
               </a>
               <div className="flex flex-wrap gap-3">
-                <a href={`mailto:${profile.email}`} className="btn btn--light">
+                <a
+                  href={`mailto:${profile.email}`}
+                  className="btn btn--primary"
+                >
                   {dict.intro.sendEmail}
                 </a>
                 <CopyEmail
@@ -365,7 +372,7 @@ export default async function Page({ params }: PageProps<"/[lang]">) {
                   href={profile.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn btn--on-graphite"
+                  className="btn"
                 >
                   {dict.contact.linkedin}
                   <ArrowUpRight aria-hidden className="size-4" />

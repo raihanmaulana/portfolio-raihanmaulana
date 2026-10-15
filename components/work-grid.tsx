@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, X } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -13,12 +13,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Dictionary } from "@/content/dictionary";
-import {
-  filterIds,
-  filterLabels,
-  type FilterId,
-  type Project,
-} from "@/content/site";
+import { filterIds, filterLabels, type FilterId } from "@/content/filters";
+import type { Project } from "@/content/site";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -27,6 +23,8 @@ type Props = {
 };
 
 const INITIAL_COUNT = 5;
+
+const WASHES = ["bg-wash-1", "bg-wash-2", "bg-wash-3"];
 
 function StackTags({ stack, max }: { stack: string[]; max?: number }) {
   if (stack.length === 0) return null;
@@ -111,34 +109,64 @@ export function WorkGrid({ projects, dict }: Props) {
               key={project.slug}
               className={cn(
                 "card card-fade relative flex flex-col overflow-hidden rounded-md border border-rule bg-paper",
-                wide && "sm:col-span-2 lg:flex-row",
+                wide && "card--wide sm:col-span-2 lg:flex-row",
               )}
               style={
-                { animationDelay: `${Math.min(index, 8) * 40}ms` } as React.CSSProperties
+                {
+                  animationDelay: `${Math.min(index, 8) * 40}ms`,
+                } as React.CSSProperties
               }
             >
               <div
                 className={cn(
-                  "relative aspect-[15/8] shrink-0 overflow-hidden border-b border-rule bg-paper-2",
+                  "relative aspect-[15/10] shrink-0 overflow-hidden border-b border-rule",
+                  WASHES[index % WASHES.length],
                   wide &&
-                    "lg:aspect-auto lg:min-h-[20rem] lg:w-[58%] lg:border-r lg:border-b-0",
+                    "lg:aspect-auto lg:min-h-[21rem] lg:w-[58%] lg:border-r lg:border-b-0",
                 )}
               >
-                <Image
-                  src={project.images[0]}
-                  alt=""
-                  fill
-                  sizes={
-                    wide
-                      ? "(min-width: 64rem) 40rem, 100vw"
-                      : "(min-width: 64rem) 23rem, (min-width: 40rem) 50vw, 100vw"
-                  }
-                  className="object-cover object-left-top"
-                />
+                {project.images.map((src, shot) => (
+                  <div
+                    key={src}
+                    className={cn(
+                      "card__shot",
+                      shot === 0 ? "card__shot--a" : "card__shot--b",
+                    )}
+                  >
+                    <Image
+                      src={src}
+                      alt=""
+                      fill
+                      sizes={
+                        wide
+                          ? "(min-width: 64rem) 30rem, 80vw"
+                          : "(min-width: 64rem) 18rem, (min-width: 40rem) 40vw, 80vw"
+                      }
+                      className="object-cover object-left-top"
+                    />
+                  </div>
+                ))}
               </div>
               <div className="flex flex-1 flex-col gap-3 p-5">
-                {project.context ? (
-                  <p className="label">{project.context}</p>
+                {project.context || project.demos.length > 0 ? (
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="label">{project.context}</p>
+                    {project.demos[0] ? (
+                      <a
+                        href={project.demos[0]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="relative z-(--z-base) inline-flex h-7 shrink-0 items-center gap-1.5 rounded-sm border border-rule px-2 font-mono text-xs text-ink-2 hover:border-accent hover:text-accent-strong"
+                      >
+                        <span
+                          aria-hidden
+                          className="size-1.5 rounded-full bg-accent"
+                        />
+                        {dict.live}
+                        <span className="sr-only">: {project.title}</span>
+                      </a>
+                    ) : null}
+                  </div>
                 ) : null}
                 <h3 className="text-lg font-semibold">{project.title}</h3>
                 <p className={cn("text-sm", !wide && "line-clamp-2")}>
@@ -208,6 +236,23 @@ export function WorkGrid({ projects, dict }: Props) {
               <div className="mt-5">
                 <StackTags stack={active.stack} />
               </div>
+
+              {active.demos.length > 0 ? (
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {active.demos.map((href, index) => (
+                    <a
+                      key={href}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={cn("btn", index === 0 && "btn--primary")}
+                    >
+                      {index === 0 ? dict.openDemo : dict.otherVersion}
+                      <ArrowUpRight aria-hidden className="size-4" />
+                    </a>
+                  ))}
+                </div>
+              ) : null}
 
               <h3 className="mt-7 text-base font-semibold">{dict.whatIDid}</h3>
               <ul className="mt-3 flex max-w-[65ch] flex-col gap-2">

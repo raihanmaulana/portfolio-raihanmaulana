@@ -103,24 +103,6 @@
     border-color: var(--color-ink);
     background: var(--color-ink);
   }
-  .btn--on-graphite {
-    border-color: var(--color-graphite-rule);
-    background: var(--color-graphite);
-    color: var(--color-graphite-ink);
-  }
-  .btn--on-graphite:hover {
-    border-color: var(--color-graphite-muted);
-    background: var(--color-graphite-2);
-  }
-  .btn--light {
-    border-color: var(--color-graphite-ink);
-    background: var(--color-graphite-ink);
-    color: var(--color-graphite);
-  }
-  .btn--light:hover {
-    border-color: var(--color-paper);
-    background: var(--color-paper);
-  }
   .btn[data-state="success"] {
     border-color: var(--color-accent);
   }
@@ -185,19 +167,74 @@
   .card:focus-within {
     border-color: var(--color-accent);
   }
-  .card img {
+  /* Two screenshots set on a cool wash: the main one up-left, the second
+     smaller, slightly turned, overlapping down-right */
+  .card__shot {
+    position: absolute;
+    aspect-ratio: 15 / 8;
+    overflow: hidden;
+    border: 1px solid var(--color-rule-2);
+    border-radius: var(--radius-sm);
+    background: var(--color-paper);
+    box-shadow: var(--shadow-panel);
     transition: transform var(--dur-long) var(--ease-out);
+  }
+  .card__shot--a {
+    top: 11%;
+    left: 6%;
+    width: 74%;
+  }
+  .card__shot--b {
+    right: 5%;
+    bottom: 9%;
+    width: 48%;
+    transform: rotate(2deg);
+  }
+  /* The wide feature card is taller than its screenshots' ratio, so they
+     grow and sit lower to fill the wash */
+  @media (min-width: 64rem) {
+    .card--wide .card__shot--a {
+      top: 14%;
+      width: 82%;
+    }
+    .card--wide .card__shot--b {
+      bottom: 12%;
+      width: 56%;
+    }
   }
   .card .card__arrow {
     transition: transform var(--dur-short) var(--ease-out);
   }
   @media (hover: hover) and (pointer: fine) {
-    .card:hover img {
-      transform: scale(1.03);
+    .card:hover .card__shot--a {
+      transform: translateY(-4px);
+    }
+    .card:hover .card__shot--b {
+      transform: translate(-6px, -8px) rotate(0deg);
     }
     .card:hover .card__arrow {
       transform: translateX(3px);
     }
+  }
+
+  /* "Two sides" diagram: connectors draw in once when revealed */
+  .connector {
+    transform: scaleX(0);
+    transform-origin: var(--from, left) center;
+    transition: transform 900ms var(--ease-out) 300ms;
+  }
+  .connector--v {
+    transform: scaleY(0);
+    transform-origin: center top;
+  }
+  .reveal[data-in] .connector {
+    transform: none;
+  }
+  .node-ring {
+    animation: none;
+  }
+  .reveal[data-in] .node-ring {
+    animation: ring 1.6s var(--ease-out) 900ms 2 both;
   }
 
   /* Scroll progress: a cobalt hairline on the nav's bottom edge */
@@ -352,6 +389,16 @@
     transform: scaleX(1);
   }
 }
+@keyframes ring {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
 @keyframes typing {
   to {
     width: calc(var(--chars) * 1ch);
@@ -435,7 +482,11 @@
   .scroll-progress {
     display: none;
   }
-  .reveal[data-in] .count {
+  .reveal[data-in] .count,
+  .reveal[data-in] .node-ring {
     animation: none;
+  }
+  .connector {
+    transform: none;
   }
 }
